@@ -1,0 +1,128 @@
+
+
+create table if not exists patient(
+pid varchar(10) primary key,
+phno varchar(10) not null,
+pname varchar(20) not null,
+dob date not null, 
+addres varchar(30) not null,
+sex varchar(1) check (sex in ('m','f','o')),
+covid_patient varchar (1) check (covid_patient in('y','n')),
+ptype varchar(3) not null check (ptype in ('ipd','opd')));
+
+create table  if not exists doctor(
+doc_id varchar(10) primary key,
+qual varchar(20) not null,
+consultn int not null, 
+empid varchar(10) not null);
+
+create table  if not exists nurse(
+nurseid varchar(10) primary key,
+patientcount int not null,
+empid varchar(10) not null);
+
+create table  if not exists department(
+deptid varchar(30) primary key,
+deptname varchar(40) not null
+,deptloc varchar(30) not null);
+
+create table  if not exists employee(
+empid varchar(10) primary key, 
+ename varchar(20) not null,
+gender varchar(1) check(gender in ('m','f', 'o')),
+joindate date not null, 
+dob date not null,
+phno varchar(10), 
+leave_date date, 
+emp_type varchar(3) not null check(emp_type in ('doc', 'nur')),
+deptid varchar(10));
+
+alter table employee add foreign key(deptid) references department(deptid);
+
+create table  if not exists Out_Patient(OPD_ID varchar(10) primary key,
+D_Arrival date not null,
+Disease varchar(50) not null,
+Pid varchar(10) not null);
+
+create table  if not exists in_patient(
+ipd_id varchar(10) primary key,
+d_disease varchar(20) not null,
+d_arrival date not null,
+d_discharge date,
+pid varchar(10) not null,
+room_id varchar(10) not null);
+
+
+create table  if not exists room(
+room_id varchar(10) primary key,
+room_cost int not null,
+room_type text);
+
+create table  if not exists nurse_assigned(
+nurse_id varchar(10),
+patient_ipd_id varchar(10) not null,
+primary key(nurse_id, patient_ipd_id));
+
+create table  if not exists doctor_assigned(
+doc_id varchar(10),
+patient_id varchar(10),
+primary key(doc_id,patient_id));
+
+create table  if not exists test(
+test_id varchar(10) primary key,
+test_name text not null,
+test_cost int not null);
+
+create table  if not exists medicine(
+med_id varchar(10) primary key,
+med_name text not null,
+med_cost int not null);
+
+create table  if not exists bill(
+bill_id varchar(10) primary key,
+other_charges int not null,
+bill_date date not null,
+pid varchar(10) not null);
+
+create table  if not exists takes(
+med_id varchar(10) not null,
+patient_id varchar(10) not null,
+m_date date,
+qty int not null, 
+primary key(med_id,patient_id));
+
+create table  if not exists has(
+test_id varchar(10), 
+pid varchar(10),
+tdate date not null,
+primary key(test_id, pid),
+foreign key(pid) references patient(pid),
+foreign key(test_id) references test(test_id));  
+
+-- alter table takes add foreign key(med_id) references medicine(med_id);
+
+-- alter table takes add foreign key(patient_id) references patient(pid);
+
+alter table doctor add foreign key(empid) references employee(empid);
+
+alter table nurse add foreign key(empid) references employee(empid);
+
+alter table doctor_assigned add foreign key(doc_id) references doctor(doc_id);
+
+alter table doctor_assigned add foreign key(patient_id) references patient(pid);
+
+alter table nurse_assigned add foreign key(nurse_id) references nurse(nurseid);
+
+alter table nurse_assigned add foreign key(patient_ipd_id) references in_patient(ipd_id);
+
+alter table in_patient add foreign key(pid) references patient(pid);
+
+alter table in_patient add foreign key(room_id) references room(room_id);
+
+alter table out_patient add foreign key(pid) references patient(pid);
+
+alter table bill add foreign key(pid) references patient(pid);
+
+
+-- alter table test add test_date date not null
+
